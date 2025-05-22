@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { TextInput, Button, Text, HelperText } from 'react-native-paper';
 
@@ -10,18 +10,34 @@ interface User {
 
 interface UserFormProps {
   onSubmit: (user: User) => void;
+  editingUser: User | null;
+  onCancelEdit: () => void;
 }
 
-export default function UserForm({ onSubmit }: UserFormProps) {
+export default function UserForm({ onSubmit, editingUser, onCancelEdit }: UserFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
 
   const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
 
-  // Regex para validar apenas letras e espaços
+  useEffect(() => {
+    console.log('UserForm useEffect: editingUser changed to:', editingUser);
+    if (editingUser) {
+      setName(editingUser.name);
+      setEmail(editingUser.email);
+      setNameError('');
+      setEmailError('');
+    } else {
+      // Este bloco DEVE ser executado quando editingUser é NULL (modo de cadastro)
+      setName('');
+      setEmail('');
+      setNameError('');
+      setEmailError('');
+    }
+  }, [editingUser]);
+
   const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
-  // Regex básico para email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const validate = () => {
@@ -52,9 +68,13 @@ export default function UserForm({ onSubmit }: UserFormProps) {
 
   const handleSubmit = () => {
     if (validate()) {
-      onSubmit({ id: Date.now().toString(), name: name.trim(), email: email.trim() });
-      setName('');
-      setEmail('');
+      const userToSubmit: User = { // Tipagem explícita aqui
+        id: editingUser ? editingUser.id : '', // ID será gerado no App.tsx se for novo
+        name: name.trim(),
+        email: email.trim()
+      };
+      console.log('UserForm handleSubmit: Chamando onSubmit com user:', userToSubmit);
+      onSubmit(userToSubmit);
     }
   };
 
@@ -83,8 +103,14 @@ export default function UserForm({ onSubmit }: UserFormProps) {
       {emailError ? <HelperText type="error">{emailError}</HelperText> : null}
 
       <Button mode="contained" onPress={handleSubmit} style={{ marginTop: 16 }}>
-        Cadastrar
+        {editingUser ? 'Salvar Alterações' : 'Cadastrar'}
       </Button>
+
+      {editingUser && (
+        <Button mode="text" onPress={onCancelEdit} style={{ marginTop: 8 }}>
+          Cancelar Edição
+        </Button>
+      )}
     </View>
   );
 }

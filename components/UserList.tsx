@@ -6,9 +6,10 @@ import { User } from '../types/User';
 type Props = {
   users: User[];
   onDelete: (id: string) => void;
+  onEdit: (user: User) => void;
 };
 
-export default function UserList({ users, onDelete }: Props) {
+export default function UserList({ users, onDelete, onEdit }: Props) {
   const theme = useTheme();
 
   if (users.length === 0) {
@@ -31,13 +32,22 @@ export default function UserList({ users, onDelete }: Props) {
           description={item.email}
           left={(props) => <List.Icon {...props} icon="account-circle" />}
           right={(props) => (
-            <IconButton
-              {...props}
-              icon="delete"
-              iconColor={theme.colors.error}  // Aqui está a correção
-              onPress={() => onDelete(item.id)}
-              accessibilityLabel={`Remover usuário ${item.name}`}
-            />
+            <View style={styles.listItemActions}>
+              <IconButton
+                {...props}
+                icon="pencil"
+                iconColor={theme.colors.primary}
+                onPress={() => onEdit(item)}
+                accessibilityLabel={`Editar usuário ${item.name}`}
+              />
+              <IconButton
+                {...props}
+                icon="delete"
+                iconColor={theme.colors.error}
+                onPress={() => onDelete(item.id)}
+                accessibilityLabel={`Remover usuário ${item.name}`}
+              />
+            </View>
           )}
           style={styles.listItem}
           titleStyle={{ fontWeight: 'bold' }}
@@ -64,6 +74,10 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     padding: 20,
+    alignItems: 'center',
+  },
+  listItemActions: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
 });

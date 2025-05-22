@@ -1,0 +1,30 @@
+# Dependências do Node
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# Expo / React Native
+.expo/
+*.iml
+.build/
+.env
+.DS_Store
+ios/build/
+android/build/
+android/.gradle
+!/android/gradle/wrapper/gradle-wrapper.jar
+!/android/gradlew
+!/android/gradlew.bat
+!/android/app/build/intermediates/local_jars/
+*.apk
+*.ap_
+*.aab
+*.json
+*.keystore
+*.p12
+*.jks
+*.key
+*.cert
+*.der
+*.txt
+*.log
